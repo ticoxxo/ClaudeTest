@@ -9,29 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @State private var notes: [Note] = [
-        Note(
-            id: 1,
-            title: "Meeting",
-            content: "Discuss Q4 goals",
-            priority: .high
-        ),
-        Note(
-            id: 2,
-            title: "Shopping",
-            content: "Milk, eggs, bread",
-            priority: .low
-        ),
-        Note(
-            id: 3,
-            title: "Ideas",
-            content: "New app features",
-            priority: .medium
-        )
-    ]
+    @State private var noteManager = NoteManager(store: NoteManager.sampleData)
 
     @State private var showingNewNote = false
-    @State private var nextId = 4
 
     var body: some View {
         NavigationStack {
@@ -46,10 +26,10 @@ struct ContentView: View {
 
                     // Status indicator with proper accessibility
                     Circle()
-                        .fill(notes.isEmpty ? Color.green : Color.red)
+                        .fill(noteManager.store.isEmpty ? Color.green : Color.red)
                         .frame(width: 12, height: 12)
                         .accessibilityLabel("Status indicator")
-                        .accessibilityValue(notes.isEmpty ? "No notes" : "Active notes")
+                        .accessibilityValue(noteManager.store.isEmpty ? "No notes" : "Active notes")
                         .accessibilityHint("Shows whether the note list contains active items")
                 }
                 .padding()
@@ -57,7 +37,7 @@ struct ContentView: View {
 
                 // Notes list
                 List {
-                    ForEach(notes, id: \.id) { note in
+                    ForEach(noteManager.store, id: \.id) { note in
                         NoteRowView(note: note)
                             // ACCESSIBILITY ISSUE #2: No accessibility container
                     }
@@ -81,10 +61,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showingNewNote) {
-            NewNoteView(
-                notes: $notes,
-                nextId: $nextId
-            )
+            NewNoteView(noteManager: noteManager)
         }
     }
 }
