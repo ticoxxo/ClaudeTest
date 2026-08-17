@@ -11,8 +11,7 @@ struct NewNoteView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var content: AttributedString = ""
-    @Binding var notes: [Note]
-    @Binding var nextId: Int
+    var noteManager: NoteManager
     @State private var selection = AttributedTextSelection()
     @Environment(\.fontResolutionContext) private var fontResolutionContext
 
@@ -112,15 +111,12 @@ struct NewNoteView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
                         let newNote = Note(
-                            id: nextId,
                             title: title,
                             content: content,
                             priority: .medium
                         )
 
-                        notes.append(newNote)
-
-                        nextId += 1
+                        noteManager.store.append(newNote)
 
                         dismiss()
                     }
